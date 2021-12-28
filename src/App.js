@@ -9,8 +9,10 @@ function App() {
     const canvasRef = useRef()
 
     const startGame = () => {
-        game.start()
-        setStarted(true)
+        import("./game/game").then(({ start }) => {
+            start(game)
+            setStarted(true)
+        })
     }
 
     console.log(game)
