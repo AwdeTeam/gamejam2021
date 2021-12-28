@@ -27,10 +27,7 @@ export class Game {
         this.game = game
 
         this.player = new Player(this.game)
-        game.input.pointers.primary.on("move", (evt) => {
-            this.player.pos.x += 1
-        })
-
+        
         
         this.game.add(this.player)
     }
