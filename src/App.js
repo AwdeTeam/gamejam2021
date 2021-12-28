@@ -1,25 +1,30 @@
-import React from "react"
+import React, { useState } from "react"
 
-import logo from "./logo.svg"
-import "./App.css"
+import * as ex from "excalibur"
+
+import "./styles/App.css"
 
 function App() {
+    const [game, setGame] = useState(null)
+    const [started, setStarted] = useState(false)
+
+    const startGame = () => {
+        game.start()
+        setStarted(true)
+    }
+
+    if (game === null) {
+        setGame(new ex.Engine({}))
+    }
+
     return (
         <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
+            <div style={{
+                border: "solid black 1 px",
+            }}
+            >
+                {(started) ? game : startGame()}
+            </div>
         </div>
     )
 }
