@@ -31,5 +31,5 @@ export function start(gameEngine) {
     const loader = makeLoader()
     const game = new Game(gameEngine, loader)
 
-    return gameEngine.start(loader).then(function() { gameEngine.startMusic() })
+    return gameEngine.start(loader).then(function() { game.startMusic() })
 }
