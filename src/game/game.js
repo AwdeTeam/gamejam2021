@@ -1,5 +1,24 @@
-import { Engine } from "excalibur"
+import { Engine, Loader } from "excalibur"
+
+import { MusicManager } from "./music"
+import { Player } from "./player"
+
+export class Game {
+    constructor(game) {
+        // game: ex.Engine
+        this.assets = new Loader()
+
+        this.music = new MusicManager(this.assets)
+        this.music.play()
+
+        this.game = game
+
+        this.player = Player(this.game)
+    }
+}
 
 export function initialize(canvasElement) {
-    return new Engine({ canvasElement })
+    const engine = new Engine({ canvasElement })
+    const game = new Game(engine)
+    return engine
 }
