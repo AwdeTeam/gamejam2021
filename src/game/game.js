@@ -39,9 +39,12 @@ export class Game {
 
 export function initialize(canvasElement) {
     const engine = new Engine({ 
+        canvasElement,
+        suppressPlayButton: true,
+
         width: config.display.width,
         height: config.display.height,
-        canvasElement: canvasElement 
+
     })
     return engine
 }

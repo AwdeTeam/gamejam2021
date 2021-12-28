@@ -1,19 +1,11 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react"
 
 import "./styles/App.css"
 
 function App() {
     const [game, setGame] = useState(null)
-    const [started, setStarted] = useState(false)
 
     const canvasRef = useRef()
-
-    const startGame = () => {
-        import("./game/game").then(({ start }) => {
-            start(game)
-            setStarted(true)
-        })
-    }
 
     console.log(game)
     useEffect(() => {
@@ -23,10 +15,19 @@ function App() {
         })
     }, [])
 
+    useLayoutEffect(() => {
+        import("./game/game").then(({ start }) => {
+            start(game)
+        })
+    }, [game])
+
+    import.meta.webpackHot.accept("./game/game", ({ initialize }) => {
+        setGame(initialize(canvasRef.current, true))
+    })
+
     return (
         <div className="App">
             <br />
-            { started || <button type="button" onClick={startGame}>Start</button> }
             <div style={{
                 border: "solid black 1 px",
             }}
