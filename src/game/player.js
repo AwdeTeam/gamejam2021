@@ -1,34 +1,29 @@
 /* eslint-disable */
 import * as ex from "excalibur"
 
-export class Player {
+export class Player extends ex.Actor {
     constructor(game) {
-        this.size = 10
-        this.texture = null
-
-
-
-
-
-        
-        this.game = game
-        this.actor = new ex.Actor({
+        super({
             x: 150,
             y: 20,
             width: 20,
             height: 20,
             color: ex.Color.Red
         })
+        this.size = 10
+        this.texture = null
 
-        this.actor.body.collisionType = ex.CollisionType.Fixed
-        this.game.add(this.actor)
+        
+        this.game = game
 
-        this.game.input.pointers.primary.on("move", this.mouseMove)
+        this.body.collisionType = ex.CollisionType.Fixed
+
+        // this.game.input.pointers.primary.on("move", this.mouseMove)
     }
 
     // TODO: 
-    mouseMove(evt) {
-        this.actor.pos.x += 2
-    }
+    // mouseMove(evt) {
+    //     this.pos.x += 2
+    // }
 
 }
