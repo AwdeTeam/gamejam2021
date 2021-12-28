@@ -17,8 +17,14 @@ export class Game {
     }
 }
 
+import makeLoader from "./assets"
+
 export function initialize(canvasElement) {
     const engine = new Engine({ canvasElement })
     const game = new Game(engine)
     return engine
+}
+
+export function start(gameEngine) {
+    return gameEngine.start(makeLoader())
 }
