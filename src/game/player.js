@@ -1,4 +1,7 @@
+/* player.js */
 /* eslint-disable */
+
+
 import * as ex from "excalibur"
 import { Vector } from "excalibur"
 
@@ -36,13 +39,14 @@ export class Player extends ex.Actor {
     }
 
     onPreUpdate(engine, delta) {
-        //console.log("are we in preupdate")
-        //this.rotation += .1
-      
-      
-      	if (engine.input.keyboard.isHeld(ex.Input.Keys.W)) {
-            console.log("Trying to move forward")
-        	this.moveForward(delta)
+        const moveVector = new Vector(
+            engine.input.keyboard.isHeld(ex.Input.Keys.D) - engine.input.keyboard.isHeld(ex.Input.Keys.A),
+            engine.input.keyboard.isHeld(ex.Input.Keys.S) - engine.input.keyboard.isHeld(ex.Input.Keys.W),
+        )
+        //console.log(moveVector)
+        
+        if (moveVector.x || moveVector.y) {
+            this.pos = this.pos.add(moveVector.normalize().scale(delta * this.speed))
         }
     }
 
@@ -53,6 +57,8 @@ export class Player extends ex.Actor {
       
       	this.pos = this.pos.add(forwardVector)
     }
+  
+  
 
     mouseMove(evt) {
     	// first get position of mouse pointer
