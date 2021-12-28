@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Engine, Loader } from "excalibur"
 
 import { MusicManager } from "./music"
@@ -5,25 +6,30 @@ import { Player } from "./player"
 import makeLoader from "./assets"
 
 export class Game {
-    constructor(game) {
+    constructor(game, loader) {
         // game: ex.Engine
-        this.assets = new Loader()
-
-        this.music = new MusicManager(this.assets)
-        this.music.play()
+        // loader: ex.Loader
+        this.loader = loader
+        this.music = new MusicManager(this.loader)
 
         this.game = game
 
-        this.player = Player(this.game)
+        // this.player = new Player(this.game)
+    }
+
+    startMusic() {
+        this.music.play()
     }
 }
 
 export function initialize(canvasElement) {
     const engine = new Engine({ canvasElement })
-    const game = new Game(engine)
     return engine
 }
 
 export function start(gameEngine) {
-    return gameEngine.start(makeLoader())
+    const loader = makeLoader()
+    const game = new Game(gameEngine, loader)
+
+    return gameEngine.start(loader).then(function() { gameEngine.startMusic() })
 }
