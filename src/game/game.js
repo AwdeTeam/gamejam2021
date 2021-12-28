@@ -2,6 +2,7 @@ import { Engine, Loader } from "excalibur"
 
 import { MusicManager } from "./music"
 import { Player } from "./player"
+import makeLoader from "./assets"
 
 export class Game {
     constructor(game) {
@@ -16,8 +17,6 @@ export class Game {
         this.player = Player(this.game)
     }
 }
-
-import makeLoader from "./assets"
 
 export function initialize(canvasElement) {
     const engine = new Engine({ canvasElement })
