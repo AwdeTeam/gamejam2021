@@ -12,6 +12,7 @@ export class Player extends ex.Actor {
             color: ex.Color.Red
         })
         this.size = 10
+        this.speed = 0.1
         this.texture = null
 
         
@@ -22,11 +23,11 @@ export class Player extends ex.Actor {
 
 
 
-        //this.game.input.keyboard.on("press", (evt) => {
-        //    if (evt.key == ex.Input.Keys.W) {
-        //        
-        //    }
-        //})
+        this.game.input.keyboard.on("press", (evt) => {
+            if (evt.key == ex.Input.Keys.W) {
+                
+            }
+        })
         
 
         this.game.input.pointers.primary.on("move", (evt) => { 
@@ -37,13 +38,22 @@ export class Player extends ex.Actor {
     onPreUpdate(engine, delta) {
         //console.log("are we in preupdate")
         //this.rotation += .1
+      
+      
+      	if (engine.input.keyboard.isHeld(ex.Input.Keys.W)) {
+            console.log("Trying to move forward")
+        	this.moveForward(delta)
+        }
     }
 
-    moveForward() {
-        //this.vel.
+    moveForward(delta) {
+    	// create vector with current player rotation and magnitude equal to speed*delta
+    	let forwardVector = Vector.fromAngle(this.rotation)
+        forwardVector.magnitude = this.speed * delta
+      
+      	this.pos = this.pos.add(forwardVector)
     }
 
-    // TODO: 
     mouseMove(evt) {
     	// first get position of mouse pointer
         //console.log("move")

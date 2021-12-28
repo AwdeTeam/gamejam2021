@@ -13,7 +13,7 @@ export class MusicManager {
     }
 
     play() {
-        this.theme.play(0.3)
+        this.theme.play(0.1)
     }
 }
 
