@@ -6,7 +6,7 @@ import * as ex from "excalibur"
 import { Vector } from "excalibur"
 
 export class Player extends ex.Actor {
-    constructor(game) {
+    constructor(game, config) {
         super({
             x: 150,
             y: 20,
@@ -14,11 +14,13 @@ export class Player extends ex.Actor {
             height: 20,
             color: ex.Color.Red
         })
-        this.size = 10
-        this.speed = 0.6
-        this.texture = null
 
         this.game = game
+
+        this.size = config.size
+        this.speed = config.speed
+        this.texture = null
+
 
         this.body.collisionType = ex.CollisionType.Fixed
 

@@ -5,31 +5,36 @@ import { MusicManager } from "./music"
 import { Player } from "./player"
 import makeLoader from "./assets"
 
-
-
 const config = {
     display: {
         width: 1200,
         height: 850
+    },
+    player: {
+        speed: 0.4,
+        size: 10,
     }
 }
 
-
-
-
 export class Game {
-    constructor(game, loader) {
-        // game: ex.Engine
+    constructor(engine, loader) {
+        // engine: ex.Engine
         // loader: ex.Loader
         this.loader = loader
         this.music = new MusicManager(this.loader)
+        this.engine = engine
 
-        this.game = game
+        this.setupPlayer()
+    }
 
-        this.player = new Player(this.game)
-        
-        
-        this.game.add(this.player)
+    addActor(cls, actorConfig) {
+        const actor = new cls(this.engine, actorConfig)
+        this.engine.add(actor)
+        return actor
+    }
+
+    setupPlayer() {
+        this.player = this.addActor(Player, config.player)
     }
 
     startMusic() {
@@ -42,8 +47,7 @@ export function initialize(canvasElement) {
         canvasElement,
         suppressPlayButton: true,
 
-        width: config.display.width,
-        height: config.display.height,
+        ...config.display,
 
     })
     return engine
