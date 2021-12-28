@@ -29,8 +29,9 @@ module.exports = {
         "comma-dangle": 0,
         "quote-props": 0,
         "max-classes-per-file": 0,
-        "no-console": [1, { "allow": ["warn", "error"] }],
+        "no-console": 0,
         "object-curly-newline": 0,
+        "no-unreachable": "warn",
 
         "import/prefer-default-export": 0,
 

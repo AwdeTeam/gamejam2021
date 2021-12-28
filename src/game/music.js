@@ -1,14 +1,11 @@
-/* eslint-disable */
-import * as ex from "excalibur"
+import { Sound } from "excalibur"
 
 import song from "../assets/TheJunglesHeartbeat.mp3"
-
 
 export class MusicManager {
     constructor(loader) {
         // loader: ex.Loader
-        //this.theme = new ex.Sound("../assets/TheJunglesHeartbeat.mp3")
-        this.theme = new ex.Sound(song)
+        this.theme = new Sound(song)
         loader.addResource(this.theme)
     }
 
@@ -16,4 +13,3 @@ export class MusicManager {
         this.theme.play(0.1)
     }
 }
-

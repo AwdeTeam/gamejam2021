@@ -22,7 +22,7 @@ function App() {
     }, [game])
 
     import.meta.webpackHot.accept("./game/game", ({ initialize }) => {
-        setGame(initialize(canvasRef.current, true))
+        setGame(initialize(canvasRef.current))
     })
 
     return (

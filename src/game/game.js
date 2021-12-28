@@ -1,11 +1,15 @@
-/* eslint-disable */
-import { Engine, Loader } from "excalibur"
+import { Engine, Logger } from "excalibur"
 
 import { MusicManager } from "./music"
 import { Player } from "./player"
 import makeLoader from "./assets"
 
 const config = {
+    development: {
+        debugActors: false,
+        noPlayButton: true,
+        silentMode: true,
+    },
     display: {
         width: 1200,
         height: 850
@@ -27,8 +31,8 @@ export class Game {
         this.setupPlayer()
     }
 
-    addActor(cls, actorConfig) {
-        const actor = new cls(this.engine, actorConfig)
+    addActor(Cls, actorConfig) {
+        const actor = new Cls(this, actorConfig)
         this.engine.add(actor)
         return actor
     }
@@ -38,18 +42,27 @@ export class Game {
     }
 
     startMusic() {
-        this.music.play()
+        if (!config.development.silentMode) {
+            this.music.play()
+        }
     }
 }
 
 export function initialize(canvasElement) {
-    const engine = new Engine({ 
+    const engine = new Engine({
         canvasElement,
-        suppressPlayButton: true,
+        suppressPlayButton: config.development.noPlayButton,
 
         ...config.display,
 
     })
+
+    engine._logger.info = console.log // eslint-disable-line no-underscore-dangle
+
+    if (config.development.debugActors) {
+        engine.toggleDebug()
+    }
+
     return engine
 }
 
@@ -57,5 +70,12 @@ export function start(gameEngine) {
     const loader = makeLoader()
     const game = new Game(gameEngine, loader)
 
-    return gameEngine.start(loader).then(function() { game.startMusic() })
+    gameEngine.start(loader).then(() => game.startMusic()).then(
+        () => {
+            console.log("Started!")
+        },
+        (err) => {
+            console.log(err)
+        }
+    )
 }
