@@ -4,10 +4,11 @@ import "./styles/App.css"
 
 function App() {
     const [game, setGame] = useState(null)
+    const [tracked, setTracked] = useState({})
 
     const canvasRef = useRef()
 
-    console.log(game)
+    // console.log(game)
     useEffect(() => {
         import("./game/game").then(({ initialize }) => {
             // Runs once, only after the component is mounted
@@ -17,7 +18,7 @@ function App() {
 
     useLayoutEffect(() => {
         import("./game/game").then(({ start }) => {
-            start(game)
+            start(game, setTracked)
         })
     }, [game])
 
@@ -27,6 +28,7 @@ function App() {
 
     return (
         <div className="App">
+            <InfoBar tracked={tracked} />
             <br />
             <div style={{
                 border: "solid black 1 px",
@@ -34,6 +36,20 @@ function App() {
             >
                 <canvas ref={canvasRef} />
             </div>
+        </div>
+    )
+}
+
+function InfoBar({ tracked }) {
+    return (
+        <div>
+            <table>
+                <tr>
+                    { Object.entries(tracked).map(([name, value]) => (
+                        <td key={name}><b>{name}:</b> {value}</td>
+                    ))}
+                </tr>
+            </table>
         </div>
     )
 }

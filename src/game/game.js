@@ -16,6 +16,7 @@ const config = {
         debugActors: false,
         noPlayButton: true,
         silentMode: false,
+        updateInterval: 250,
     },
     display: {
         width: 1200,
@@ -35,7 +36,7 @@ function loadTexture(textureImport, loader) {
 }
 
 export class Game {
-    constructor(engine, loader) {
+    constructor(engine, loader, setTracked) {
         // engine: ex.Engine
         // loader: ex.Loader
         this.config = config
@@ -49,6 +50,23 @@ export class Game {
         this.setupPlayer()
         this.setupEnemies()
         this.setupBushes()
+
+        this.updateCooldown = config.development.updateInterval
+        this.engine.onPostUpdate = (eng, delta) => {
+            Engine.prototype.onPostUpdate.call(this.engine, eng, delta)
+            if (this.updateCooldown <= 0) {
+                setTracked({
+                    x: this.player.pos.x.toFixed(3),
+                    y: this.player.pos.y.toFixed(3),
+                    hp: this.player.health,
+                    thirst: this.player.thirst.toFixed(2),
+                })
+                this.updateCooldown = config.development.updateInterval
+            }
+            else {
+                this.updateCooldown -= delta
+            }
+        }
     }
 
     addActor(Cls, actorConfig) {
@@ -63,25 +81,20 @@ export class Game {
     }
 
     setupEnemies() {
-        for (let i = 0; i < 10; i += 1) {
-            this.addActor(Enemy, { x: randomNumber(0, 1200), y: randomNumber(0, 800) })
+        for (let i = 0; i < 20; i += 1) {
+            this.addActor(Enemy, { x: randomNumber(-100, 1300), y: randomNumber(-100, 900) })
         }
     }
 
     setupBushes() {
-        for (let i = 0; i < 1; i += 1) {
+        for (let i = 0; i < 1000; i += 1) {
             this.addActor(Bush, {
-                /*x: randomNumber(-5000, 5000),
-                y: randomNumber(-5000, 5000),*/
-                x: randomNumber(0, 500),
-                y: randomNumber(0, 500),
+                x: randomNumber(-5000, 5000),
+                y: randomNumber(-5000, 5000),
                 width: 50,
                 height: 50,
                 scaling: randomFloat(1, 5),
-                //scaling: 4,
-
-                //rotation: randomFloat(0, 7),
-                //texture: this.textures.player
+                rotation: randomFloat(0, 7),
             })
         }
     }
@@ -126,9 +139,9 @@ export function initialize(canvasElement) {
     return engine
 }
 
-export function start(gameEngine) {
+export function start(gameEngine, setTracked) {
     const loader = makeLoader()
-    const game = new Game(gameEngine, loader, config)
+    const game = new Game(gameEngine, loader, setTracked)
 
     gameEngine.start(loader).then(() => game.startMusic()).then(
         () => {

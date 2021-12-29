@@ -30,7 +30,7 @@ class Projectile extends BaseActor {
         this.velocity = new Vector(velocity.x, velocity.y)
 
         this.on("collisionstart", ({ other }) => {
-            // eslint-disable-next-line no-underscore-dangle max-line
+            // eslint-disable-next-line no-underscore-dangle
             if (other._name !== "player" && other._name !== "enemy") { return } // this is because of bullet collisisons
             // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
@@ -38,7 +38,9 @@ class Projectile extends BaseActor {
                 other.hit(1)
                 this.removeSelf()
             }
-            catch (err) { console.log(err) }
+            catch (err) {
+                console.log(err)
+            }
         })
     }
 
@@ -55,21 +57,21 @@ class Projectile extends BaseActor {
 export class TerrainActor extends BaseActor {
     constructor(game, config) {
         super(game, config)
-        console.log(config)
         this.body.collisionType = CollisionType.PreventCollision
 
         this.texture = config.texture
         this.scaling = config.scaling
-        //this.rotation = config.rotation
     }
 
     onInitialize() {
         const sprite = this.texture.toSprite()
-        //const sprite = this.game.textures.player.toSprite()
         sprite.scale = new Vector(this.scaling, this.scaling)
         this.graphics.use(sprite)
-        //console.log(this)
     }
+
+    onUpdate() {}
+    onPreUpdate() {}
+    onPostUpdate() {}
 }
 
 
@@ -86,12 +88,18 @@ export class Bush extends TerrainActor {
 
 
 
+const needsConfig = {
+    thirst: { initial: 10, rate: 0, max: 50 },
+}
+
 class LivingActor extends BaseActor {
     constructor(game, config) {
         super(game, config)
 
         const { health } = config
         this.health = health
+
+        this.thirst = needsConfig.thirst.initial
 
         this.body.collisionType = CollisionType.Active
 
@@ -104,7 +112,7 @@ class LivingActor extends BaseActor {
     }
 
     removeIfDead() {
-        if (this.health <= 0) {
+        if (this.health <= 0 || this.thirst <= 0) {
             this.onPreDeath()
             this.removeSelf()
             this.onPostDeath()
@@ -122,6 +130,8 @@ class LivingActor extends BaseActor {
     onPreUpdate(engine, delta) {
         this.lifeUpdate()
         this.fireCooldown -= delta
+
+        this.thirst -= delta * needsConfig.thirst.rate
     }
 
     FIRE() {
@@ -280,5 +290,9 @@ export class Player extends LivingActor {
         if (moveVector.x || moveVector.y) {
             this.pos = this.pos.add(moveVector.normalize().scale(delta * this.speed))
         }
+    }
+
+    onPreDeath() {
+        console.log("You died :(")
     }
 }
