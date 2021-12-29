@@ -10,7 +10,7 @@ import textureEnemy from "../assets/images/Lizard3.png"
 
 const config = {
     development: {
-        debugActors: true,
+        debugActors: false,
         noPlayButton: true,
         silentMode: false,
     },

@@ -72,12 +72,12 @@ class LivingActor extends BaseActor {
         }
     }
 
-    // onPreDeath() {}
+    onPreDeath() {}
 
-    // onPostDeath() {}
+    onPostDeath() {}
 
     lifeUpdate(delta) {
-        this.removeIfDead() 
+        this.removeIfDead()
     }
 
     onPreUpdate(engine, delta) {
@@ -143,7 +143,7 @@ export class Player extends LivingActor {
                     width: 5,
                     height: 5,
 
-                    velocity: { x: Math.cos(this.rotation), y: Math.sin(this.rotation) },
+                    velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
                     lifetime: 100,
 
                     color: Color.Red,
