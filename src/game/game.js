@@ -13,7 +13,7 @@ const config = {
         debugActors: false,
         noPlayButton: true,
         silentMode: false,
-        updateInterval: 250,
+        updateInterval: 250, // How many milliseconds (at minimum) between infobar updates?
     },
     display: {
         width: 1200,
