@@ -43,7 +43,6 @@ function App() {
 function InfoBar({ tracked }) {
     return (
         <div>
-            <h3>Info!</h3>
             <table>
                 <tr>
                     { Object.entries(tracked).map(([name, value]) => (

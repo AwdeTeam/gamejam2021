@@ -53,6 +53,41 @@ class Projectile extends BaseActor {
     }
 }
 
+// TODO: extend for bush and other types etc. (some of these have to collide)
+export class TerrainActor extends BaseActor {
+    constructor(game, config) {
+        super(game, config)
+        this.body.collisionType = CollisionType.PreventCollision
+
+        this.texture = config.texture
+        this.scaling = config.scaling
+    }
+
+    onInitialize() {
+        const sprite = this.texture.toSprite()
+        sprite.scale = new Vector(this.scaling, this.scaling)
+        this.graphics.use(sprite)
+    }
+
+    onUpdate() {}
+    onPreUpdate() {}
+    onPostUpdate() {}
+}
+
+
+export class Bush extends TerrainActor {
+    constructor(game, config) {
+        super(game, {
+            name: "bush",
+            texture: game.textures.bush,
+            ...config
+        })
+    }
+}
+
+
+
+
 const needsConfig = {
     thirst: { initial: 10, rate: 0, max: 50 },
 }

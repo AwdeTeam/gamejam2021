@@ -1,12 +1,15 @@
 import { Engine, Vector, ImageSource, Color } from "excalibur"
 
 import { MusicManager } from "./music"
-import { Player, Enemy } from "./player"
+import { Player, Enemy, Bush } from "./player"
 import makeLoader from "./assets"
+import { randomNumber, randomFloat } from "./util"
 
 // import textures
 import texturePlayer from "../assets/images/Lizard.png"
 import textureEnemy from "../assets/images/Lizard3.png"
+import textureBush from "../assets/images/Bush.png"
+import textureBush2 from "../assets/images/Bush2.png"
 
 const config = {
     development: {
@@ -46,6 +49,7 @@ export class Game {
         this.loadTextures()
         this.setupPlayer()
         this.setupEnemies()
+        this.setupBushes()
 
         this.updateCooldown = config.development.updateInterval
         this.engine.onPostUpdate = (eng, delta) => {
@@ -77,7 +81,22 @@ export class Game {
     }
 
     setupEnemies() {
-        this.addActor(Enemy, { x: 100, y: 100 })
+        for (let i = 0; i < 20; i += 1) {
+            this.addActor(Enemy, { x: randomNumber(-100, 1300), y: randomNumber(-100, 900) })
+        }
+    }
+
+    setupBushes() {
+        for (let i = 0; i < 1000; i += 1) {
+            this.addActor(Bush, {
+                x: randomNumber(-5000, 5000),
+                y: randomNumber(-5000, 5000),
+                width: 50,
+                height: 50,
+                scaling: randomFloat(1, 5),
+                rotation: randomFloat(0, 7),
+            })
+        }
     }
 
     get screenCenter() {
@@ -91,6 +110,8 @@ export class Game {
     loadTextures() {
         this.textures.player = loadTexture(texturePlayer, this.loader)
         this.textures.enemy = loadTexture(textureEnemy, this.loader)
+        this.textures.bush = loadTexture(textureBush, this.loader)
+        this.textures.bush2 = loadTexture(textureBush2, this.loader)
     }
 
     startMusic() {
