@@ -10,6 +10,7 @@ import makeLoader from "./assets"
 
 // import textures
 import texturePlayer from "../assets/images/Lizard.png" 
+import textureEnemy from "../assets/images/Lizard3.png" 
 
 
 const config = {
@@ -68,6 +69,7 @@ export class Game {
     
     loadTextures() {
         this.textures["player"] = loadTexture(texturePlayer, this.loader)
+        this.textures["enemy"] = loadTexture(textureEnemy, this.loader)
     }
 
     startMusic() {

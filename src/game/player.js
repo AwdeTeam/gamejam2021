@@ -84,14 +84,23 @@ export class Enemy extends LivingActor {
         super(game, {
             name: "enemy",
 
-            width: 20,
-            height: 20,
+            width: 50,
+            height: 30,
 
             color: Color.Orange,
 
             health: 10,
             ...config,
         })
+    }
+    
+    
+    onInitialize(engine) {
+        let sprite = this.game.textures.enemy.toSprite()
+        sprite.showDebug = this.game.config.development.debugSprites  // TODO: this doesn't actually do anything??
+        sprite.scale = new Vector(2, 2)
+
+        this.graphics.use(sprite)
     }
 }
 
@@ -102,8 +111,8 @@ export class Player extends LivingActor {
 
             x: 500,
             y: 250,
-            width: 40,
-            height: 40,
+            width: 60, // these are apparently backwards from what one would expect
+            height: 30,
             health: 10,
         })
 
@@ -137,7 +146,8 @@ export class Player extends LivingActor {
 
     onInitialize(engine) {
         let sprite = this.game.textures.player.toSprite()
-        sprite.showDebug = this.game.config.development.debugSprites 
+        sprite.showDebug = this.game.config.development.debugSprites // TODO: this doesn't actually do anything??
+
         sprite.scale = new Vector(2, 2)
 
         this.graphics.use(sprite)
