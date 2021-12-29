@@ -1,6 +1,7 @@
 /* player.js */
 
 import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
+import { randomNumber } from "./util"
 
 export class BaseActor extends Actor {
     constructor(game, config) {
@@ -34,6 +35,7 @@ class Projectile extends BaseActor {
 
             // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
+            console.log("HIT ENEMY")
             try {
                 other.hit(1)
                 this.removeSelf()
@@ -62,6 +64,8 @@ class LivingActor extends BaseActor {
 
     hit(damage) {
         this.health -= damage
+        console.log("Hit! health now")
+        console.log(this.health)
     }
 
     removeIfDead() {
@@ -76,12 +80,12 @@ class LivingActor extends BaseActor {
 
     onPostDeath() {}
 
-    lifeUpdate(delta) {
+    lifeUpdate() {
         this.removeIfDead()
     }
 
     onPreUpdate(engine, delta) {
-        this.lifeUpdate(delta)
+        this.lifeUpdate()
     }
 }
 
@@ -98,6 +102,55 @@ export class Enemy extends LivingActor {
             health: 10,
             ...config,
         })
+
+        this.speed = 0.1
+        this.targetLoc = this.pos
+        this.targetAcquired = false
+        this.timeInStrategy = 50000000 // amount of time we've spent moving to targetLoc
+    }
+
+
+    onPreUpdate(engine, delta) {
+        LivingActor.prototype.onPreUpdate.call(this, engine, delta)
+        // enemy moving logic
+
+        this.timeInStrategy += delta
+
+        // enemy rotation logic
+        const diffVector = this.pos.sub(this.game.player.pos)
+        this.rotation = diffVector.toAngle()
+
+        // determine distance to player
+        if (diffVector.magnitude() < 300) {
+            this.targetLoc = this.game.player.pos
+            this.targetAcquired = true
+            this.timeInStrategy = 0
+        }
+        else {
+            this.targetAcquired = false
+        }
+
+
+        if (this.timeInStrategy > 5000 && !this.targetAcquired) {
+            console.log("Re-evaluating")
+            
+            // pick a random location
+            let x = randomNumber(0, 1200)
+            let y = randomNumber(0, 850)
+            
+            this.targetLoc = new Vector(x, y)
+            this.timeInStrategy = 0
+        }
+
+        if (this.targetLoc === undefined) { return; }
+
+
+        let diffPosVector = this.targetLoc.sub(this.pos)
+        let posAdjustmentVector = Vector.fromAngle(diffPosVector.toAngle())
+
+        if (posAdjustmentVector.x || posAdjustmentVector.y) {
+            this.pos = this.pos.add(posAdjustmentVector.scale(delta * this.speed))
+        }
     }
 
 
@@ -129,6 +182,8 @@ export class Player extends LivingActor {
 
         const { input: { pointers: { primary } } } = this.engine
 
+        // TODO: need to make this pointing logic apply when we move the player
+        // too (cache the mouse pos)
         primary.on("move", ({ ev: { x, y } }) => {
             const mousePos = new Vector(x, y)
             const diffVector = this.pos.sub(mousePos)

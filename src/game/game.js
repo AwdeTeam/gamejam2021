@@ -12,7 +12,7 @@ const config = {
     development: {
         debugActors: false,
         noPlayButton: true,
-        silentMode: false,
+        silentMode: true,
     },
     display: {
         width: 1200,
