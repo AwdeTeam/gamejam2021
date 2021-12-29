@@ -3,7 +3,7 @@
 import { Engine, Logger, ImageSource, Color } from "excalibur"
 
 import { MusicManager } from "./music"
-import { Player } from "./player"
+import { Player, Enemy } from "./player"
 import makeLoader from "./assets"
 
 
@@ -49,6 +49,7 @@ export class Game {
 
         this.loadTextures()
         this.setupPlayer()
+        this.setupEnemies()
     }
 
     addActor(Cls, actorConfig) {
@@ -61,6 +62,10 @@ export class Game {
         this.player = this.addActor(Player, config.player)
     }
 
+    setupEnemies() {
+        this.addActor(Enemy, { x: 100, y: 100 })
+    }
+    
     loadTextures() {
         this.textures["player"] = loadTexture(texturePlayer, this.loader)
     }
@@ -82,11 +87,11 @@ export function initialize(canvasElement) {
 
     })
 
-    engine._logger.info = console.log // eslint-disable-line no-underscore-dangle
-
     if (config.development.debugActors) {
         engine.toggleDebug()
     }
+
+    window.engine = engine
 
     return engine
 }

@@ -20,9 +20,19 @@ class Projectile extends BaseActor {
     constructor(game, config) {
         super(game, config)
 
+        this.body.collisionType = CollisionType.Passive
+
         const { lifetime, velocity } = config
         this.lifetime = lifetime
         this.velocity = new Vector(velocity.x, velocity.y)
+
+        this.on("collisionstart", ({ other }) => {
+            console.log(other)
+            try {
+                other.hit(1)
+                this.removeSelf()
+            } catch (err) { console.log(err) }
+        })
     }
 
     onPreUpdate(engine, delta) {
@@ -34,7 +44,58 @@ class Projectile extends BaseActor {
     }
 }
 
-export class Player extends BaseActor {
+class LivingActor extends BaseActor {
+    constructor(game, config) {
+        super(game, config)
+
+        const { health } = config
+        this.health = health
+
+        this.body.collisionType = CollisionType.Active
+    }
+
+    hit(damage) {
+        this.health -= damage
+    }
+
+    removeIfDead() {
+        if (this.health <= 0) {
+            this.onPreDeath()
+            this.removeSelf()
+            this.onPostDeath()
+        }
+    }
+
+    onPreDeath() {}
+
+    onPostDeath() {}
+
+    lifeUpdate(delta) {
+        this.removeIfDead()
+    }
+
+    onPreUpdate(engine, delta) {
+        this.lifeUpdate(delta)
+    }
+}
+
+export class Enemy extends LivingActor {
+    constructor(game, config) {
+        super(game, {
+            name: "enemy",
+
+            width: 20,
+            height: 20,
+
+            color: Color.Orange,
+
+            health: 10,
+            ...config,
+        })
+    }
+}
+
+export class Player extends LivingActor {
     constructor(game, config) {
         super(game, {
             name: "player",
@@ -43,12 +104,11 @@ export class Player extends BaseActor {
             y: 250,
             width: 40,
             height: 40,
+            health: 10,
         })
 
         this.size = config.size
         this.speed = config.speed
-
-        this.body.collisionType = CollisionType.Fixed
 
         const { input: { pointers: { primary } } } = this.engine
 
@@ -58,8 +118,8 @@ export class Player extends BaseActor {
             this.rotation = diffVector.toAngle()
         })
 
-        primary.on("down", () => {
-            try {
+        primary.on("down", ({ ev: { button } }) => {
+            if (button === 0) {
                 this.game.addActor(Projectile, {
                     x: this.pos.x,
                     y: this.pos.y,
@@ -71,8 +131,6 @@ export class Player extends BaseActor {
 
                      color: Color.Red,
                 })
-            } catch (ex) {
-                console.log(ex)
             }
         })
     }

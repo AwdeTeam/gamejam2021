@@ -32,6 +32,7 @@ module.exports = {
         "no-console": 0,
         "object-curly-newline": 0,
         "no-unreachable": "warn",
+        "class-methods-use-this": 0,
 
         "import/prefer-default-export": 0,
 
