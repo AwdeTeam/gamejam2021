@@ -35,7 +35,10 @@ class Projectile extends BaseActor {
             try {
                 other.hit(1)
                 this.removeSelf()
-            } catch (err) { console.log(err) }
+            }
+            catch (err) {
+                console.log(err)
+            }
         })
     }
 
@@ -257,5 +260,9 @@ export class Player extends LivingActor {
         if (moveVector.x || moveVector.y) {
             this.pos = this.pos.add(moveVector.normalize().scale(delta * this.speed))
         }
+    }
+
+    onPreDeath() {
+        console.log("You died :(")
     }
 }
