@@ -53,12 +53,18 @@ class Projectile extends BaseActor {
     }
 }
 
+const needsConfig = {
+    thirst: { initial: 10, rate: 0, max: 50 },
+}
+
 class LivingActor extends BaseActor {
     constructor(game, config) {
         super(game, config)
 
         const { health } = config
         this.health = health
+
+        this.thirst = needsConfig.thirst.initial
 
         this.body.collisionType = CollisionType.Active
 
@@ -73,7 +79,7 @@ class LivingActor extends BaseActor {
     }
 
     removeIfDead() {
-        if (this.health <= 0) {
+        if (this.health <= 0 || this.thirst <= 0) {
             this.onPreDeath()
             this.removeSelf()
             this.onPostDeath()
@@ -91,6 +97,8 @@ class LivingActor extends BaseActor {
     onPreUpdate(engine, delta) {
         this.lifeUpdate()
         this.fireCooldown -= delta
+
+        this.thirst -= delta * needsConfig.thirst.rate
     }
 
     FIRE() {

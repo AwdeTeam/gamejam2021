@@ -3,7 +3,6 @@ import { Engine, Vector, ImageSource, Color } from "excalibur"
 import { MusicManager } from "./music"
 import { Player, Enemy } from "./player"
 import makeLoader from "./assets"
-import { randomNumber } from "./util"
 
 // import textures
 import texturePlayer from "../assets/images/Lizard.png"
@@ -14,6 +13,7 @@ const config = {
         debugActors: false,
         noPlayButton: true,
         silentMode: false,
+        updateInterval: 250,
     },
     display: {
         width: 1200,
@@ -33,7 +33,7 @@ function loadTexture(textureImport, loader) {
 }
 
 export class Game {
-    constructor(engine, loader) {
+    constructor(engine, loader, setTracked) {
         // engine: ex.Engine
         // loader: ex.Loader
         this.config = config
@@ -46,6 +46,23 @@ export class Game {
         this.loadTextures()
         this.setupPlayer()
         this.setupEnemies()
+
+        this.updateCooldown = config.development.updateInterval
+        this.engine.onPostUpdate = (eng, delta) => {
+            Engine.prototype.onPostUpdate.call(this.engine, eng, delta)
+            if (this.updateCooldown <= 0) {
+                setTracked({
+                    x: this.player.pos.x.toFixed(3),
+                    y: this.player.pos.y.toFixed(3),
+                    hp: this.player.health,
+                    thirst: this.player.thirst.toFixed(2),
+                })
+                this.updateCooldown = config.development.updateInterval
+            }
+            else {
+                this.updateCooldown -= delta
+            }
+        }
     }
 
     addActor(Cls, actorConfig) {
@@ -60,9 +77,7 @@ export class Game {
     }
 
     setupEnemies() {
-        for (let i = 0; i < 10; i += 1) {
-            this.addActor(Enemy, { x: randomNumber(0, 1200), y: randomNumber(0, 800) })
-        }
+        this.addActor(Enemy, { x: 100, y: 100 })
     }
 
     get screenCenter() {
@@ -103,9 +118,9 @@ export function initialize(canvasElement) {
     return engine
 }
 
-export function start(gameEngine) {
+export function start(gameEngine, setTracked) {
     const loader = makeLoader()
-    const game = new Game(gameEngine, loader, config)
+    const game = new Game(gameEngine, loader, setTracked)
 
     gameEngine.start(loader).then(() => game.startMusic()).then(
         () => {
