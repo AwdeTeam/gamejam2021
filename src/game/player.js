@@ -30,12 +30,8 @@ class Projectile extends BaseActor {
         this.velocity = new Vector(velocity.x, velocity.y)
 
         this.on("collisionstart", ({ other }) => {
-            console.log(this.originator)
-            console.log(other)
-
             // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
-            console.log("HIT ENEMY")
             try {
                 other.hit(1)
                 this.removeSelf()
@@ -60,6 +56,9 @@ class LivingActor extends BaseActor {
         this.health = health
 
         this.body.collisionType = CollisionType.Active
+
+        this.fireCooldown = 0
+        this.cooldownMax = 300
     }
 
     hit(damage) {
@@ -86,6 +85,26 @@ class LivingActor extends BaseActor {
 
     onPreUpdate(engine, delta) {
         this.lifeUpdate()
+        this.fireCooldown -= delta
+    }
+
+    FIRE() {
+        if (this.fireCooldown > 0) { return }
+        this.fireCooldown = this.cooldownMax
+
+        // TODO: add bullet types
+        this.game.addActor(Projectile, {
+            x: this.pos.x,
+            y: this.pos.y,
+            width: 5,
+            height: 5,
+
+            velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
+            lifetime: 100,
+
+            color: Color.Red,
+            originator: this
+        })
     }
 }
 
@@ -130,23 +149,27 @@ export class Enemy extends LivingActor {
             this.targetAcquired = false
         }
 
+        if (diffVector.magnitude() < 200) {
+            this.FIRE()
+        }
+
 
         if (this.timeInStrategy > 5000 && !this.targetAcquired) {
             console.log("Re-evaluating")
-            
+
             // pick a random location
-            let x = randomNumber(0, 1200)
-            let y = randomNumber(0, 850)
-            
+            const x = randomNumber(0, 1200)
+            const y = randomNumber(0, 850)
+
             this.targetLoc = new Vector(x, y)
             this.timeInStrategy = 0
         }
 
-        if (this.targetLoc === undefined) { return; }
+        if (this.targetLoc === undefined) { return }
 
 
-        let diffPosVector = this.targetLoc.sub(this.pos)
-        let posAdjustmentVector = Vector.fromAngle(diffPosVector.toAngle())
+        const diffPosVector = this.targetLoc.sub(this.pos)
+        const posAdjustmentVector = Vector.fromAngle(diffPosVector.toAngle())
 
         if (posAdjustmentVector.x || posAdjustmentVector.y) {
             this.pos = this.pos.add(posAdjustmentVector.scale(delta * this.speed))
@@ -177,6 +200,8 @@ export class Player extends LivingActor {
             health: 10,
         })
 
+        this.cooldownMax = 50
+
         this.size = config.size
         this.speed = config.speed
 
@@ -192,18 +217,20 @@ export class Player extends LivingActor {
 
         primary.on("down", ({ ev: { button } }) => {
             if (button === 0) {
-                this.game.addActor(Projectile, {
-                    x: this.pos.x,
-                    y: this.pos.y,
-                    width: 5,
-                    height: 5,
+                console.log(this.fireCooldown)
+                this.FIRE()
+                // this.game.addActor(Projectile, {
+                //     x: this.pos.x,
+                //     y: this.pos.y,
+                //     width: 5,
+                //     height: 5,
 
-                    velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
-                    lifetime: 100,
+                //     velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
+                //     lifetime: 100,
 
-                    color: Color.Red,
-                    originator: this
-                })
+                //     color: Color.Red,
+                //     originator: this
+                // })
             }
         })
     }
@@ -219,6 +246,8 @@ export class Player extends LivingActor {
     }
 
     onPreUpdate(engine, delta) {
+        LivingActor.prototype.onPreUpdate.call(this, engine, delta)
+
         const { input: { keyboard } } = engine
         const moveVector = new Vector(
             keyboard.isHeld(Input.Keys.D) - keyboard.isHeld(Input.Keys.A),
