@@ -18,7 +18,10 @@ export class BaseActor extends Actor {
 
 class Projectile extends BaseActor {
     constructor(game, config) {
+        // originator is necessary so that we don't collide with ourselves?
         super(game, config)
+
+        this.originator = config.originator
 
         this.body.collisionType = CollisionType.Passive
 
@@ -27,7 +30,9 @@ class Projectile extends BaseActor {
         this.velocity = new Vector(velocity.x, velocity.y)
 
         this.on("collisionstart", ({ other }) => {
+            console.log(this.originator)
             console.log(other)
+            if (other._name === this.originator._name) { return }
             try {
                 other.hit(1)
                 this.removeSelf()
@@ -138,7 +143,8 @@ export class Player extends LivingActor {
                     velocity: { x: Math.cos(this.rotation), y: Math.sin(this.rotation) },
                     lifetime: 100,
 
-                     color: Color.Red,
+                    color: Color.Red,
+                    originator: this
                 })
             }
         })
