@@ -1,5 +1,4 @@
 /* player.js */
-/* eslint-disable */
 
 import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
 
@@ -93,11 +92,13 @@ export class Enemy extends LivingActor {
             ...config,
         })
     }
-    
-    
+
+
     onInitialize(engine) {
-        let sprite = this.game.textures.enemy.toSprite()
-        sprite.showDebug = this.game.config.development.debugSprites  // TODO: this doesn't actually do anything??
+        const sprite = this.game.textures.enemy.toSprite()
+
+        // TODO: this doesn't actually do anything??
+        sprite.showDebug = this.game.config.development.debugSprites
         sprite.scale = new Vector(2, 2)
 
         this.graphics.use(sprite)
@@ -138,15 +139,16 @@ export class Player extends LivingActor {
                     velocity: { x: Math.cos(this.rotation), y: Math.sin(this.rotation) },
                     lifetime: 100,
 
-                     color: Color.Red,
+                    color: Color.Red,
                 })
             }
         })
     }
 
     onInitialize(engine) {
-        let sprite = this.game.textures.player.toSprite()
-        sprite.showDebug = this.game.config.development.debugSprites // TODO: this doesn't actually do anything??
+        const sprite = this.game.textures.player.toSprite()
+        // TODO: this doesn't actually do anything??
+        sprite.showDebug = this.game.config.development.debugSprites
 
         sprite.scale = new Vector(2, 2)
 

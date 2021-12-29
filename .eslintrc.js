@@ -33,6 +33,7 @@ module.exports = {
         "object-curly-newline": 0,
         "no-unreachable": "warn",
         "class-methods-use-this": 0,
+        "no-multiple-empty-lines": ["warn", { "max": 2 }],
 
         "import/prefer-default-export": 0,
 
