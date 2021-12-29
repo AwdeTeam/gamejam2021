@@ -1,24 +1,18 @@
-/* eslint-disable */
-
 import { Engine, Logger, ImageSource, Color } from "excalibur"
 
 import { MusicManager } from "./music"
 import { Player, Enemy } from "./player"
 import makeLoader from "./assets"
 
-
-
 // import textures
-import texturePlayer from "../assets/images/Lizard.png" 
-import textureEnemy from "../assets/images/Lizard3.png" 
-
+import texturePlayer from "../assets/images/Lizard.png"
+import textureEnemy from "../assets/images/Lizard3.png"
 
 const config = {
     development: {
-        debugActors: false,
+        debugActors: true,
         noPlayButton: true,
         silentMode: false,
-        debugSprites: false,
     },
     display: {
         width: 1200,
@@ -32,13 +26,13 @@ const config = {
 }
 
 function loadTexture(textureImport, loader) {
-    let texture = new ImageSource(textureImport)
+    const texture = new ImageSource(textureImport)
     loader.addResource(texture)
     return texture
 }
 
 export class Game {
-    constructor(engine, loader, config) {
+    constructor(engine, loader) {
         // engine: ex.Engine
         // loader: ex.Loader
         this.config = config
@@ -66,10 +60,10 @@ export class Game {
     setupEnemies() {
         this.addActor(Enemy, { x: 100, y: 100 })
     }
-    
+
     loadTextures() {
-        this.textures["player"] = loadTexture(texturePlayer, this.loader)
-        this.textures["enemy"] = loadTexture(textureEnemy, this.loader)
+        this.textures.player = loadTexture(texturePlayer, this.loader)
+        this.textures.enemy = loadTexture(textureEnemy, this.loader)
     }
 
     startMusic() {
@@ -78,7 +72,6 @@ export class Game {
         }
     }
 }
-
 
 export function initialize(canvasElement) {
     const engine = new Engine({

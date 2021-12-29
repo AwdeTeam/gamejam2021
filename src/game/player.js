@@ -1,5 +1,4 @@
 /* player.js */
-/* eslint-disable */
 
 import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
 
@@ -32,6 +31,8 @@ class Projectile extends BaseActor {
         this.on("collisionstart", ({ other }) => {
             console.log(this.originator)
             console.log(other)
+
+            // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
             try {
                 other.hit(1)
@@ -71,9 +72,9 @@ class LivingActor extends BaseActor {
         }
     }
 
-    onPreDeath() {}
+    // onPreDeath() {}
 
-    onPostDeath() {}
+    // onPostDeath() {}
 
     lifeUpdate(delta) {
         this.removeIfDead()
@@ -98,11 +99,13 @@ export class Enemy extends LivingActor {
             ...config,
         })
     }
-    
-    
+
+
     onInitialize(engine) {
-        let sprite = this.game.textures.enemy.toSprite()
-        sprite.showDebug = this.game.config.development.debugSprites  // TODO: this doesn't actually do anything??
+        const sprite = this.game.textures.enemy.toSprite()
+
+        // TODO: this doesn't actually do anything??
+        sprite.showDebug = this.game.config.development.debugSprites
         sprite.scale = new Vector(2, 2)
 
         this.graphics.use(sprite)
@@ -151,8 +154,9 @@ export class Player extends LivingActor {
     }
 
     onInitialize(engine) {
-        let sprite = this.game.textures.player.toSprite()
-        sprite.showDebug = this.game.config.development.debugSprites // TODO: this doesn't actually do anything??
+        const sprite = this.game.textures.player.toSprite()
+        // TODO: this doesn't actually do anything??
+        sprite.showDebug = this.game.config.development.debugSprites
 
         sprite.scale = new Vector(2, 2)
 
