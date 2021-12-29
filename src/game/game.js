@@ -3,6 +3,7 @@ import { Engine, Logger, ImageSource, Color } from "excalibur"
 import { MusicManager } from "./music"
 import { Player, Enemy } from "./player"
 import makeLoader from "./assets"
+import { randomNumber } from "./util"
 
 // import textures
 import texturePlayer from "../assets/images/Lizard.png"
@@ -58,7 +59,9 @@ export class Game {
     }
 
     setupEnemies() {
-        this.addActor(Enemy, { x: 100, y: 100 })
+        for (let i = 0; i < 10; i += 1) {
+            this.addActor(Enemy, { x: randomNumber(0, 1200), y: randomNumber(0, 800) })
+        }
     }
 
     loadTextures() {
