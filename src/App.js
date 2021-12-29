@@ -8,7 +8,7 @@ function App() {
 
     const canvasRef = useRef()
 
-    console.log(game)
+    // console.log(game)
     useEffect(() => {
         import("./game/game").then(({ initialize }) => {
             // Runs once, only after the component is mounted

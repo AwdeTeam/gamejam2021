@@ -74,8 +74,6 @@ class LivingActor extends BaseActor {
 
     hit(damage) {
         this.health -= damage
-        console.log("Hit! health now")
-        console.log(this.health)
     }
 
     removeIfDead() {
