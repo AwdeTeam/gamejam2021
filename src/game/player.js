@@ -70,10 +70,24 @@ export class TerrainActor extends BaseActor {
     }
 
     onUpdate() {}
+
     onPreUpdate() {}
+
     onPostUpdate() {}
 }
 
+export class Pond extends TerrainActor {
+    constructor(game, config) {
+        super(game, {
+            name: "pond",
+            texture: game.textures.puddle,
+
+            ...config
+        })
+
+        this.body.collisionType = CollisionType.Passive
+    }
+}
 
 export class Bush extends TerrainActor {
     constructor(game, config) {
@@ -85,11 +99,8 @@ export class Bush extends TerrainActor {
     }
 }
 
-
-
-
 const needsConfig = {
-    thirst: { initial: 10, rate: 0, max: 50 },
+    thirst: { initial: 10, rate: 1 / 5000, max: 50 },
 }
 
 class LivingActor extends BaseActor {
