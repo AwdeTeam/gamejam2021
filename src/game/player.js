@@ -1,6 +1,6 @@
 /* player.js */
 
-import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
+import { Actor, Vector, Input, Color, CollisionType, Animation } from "excalibur"
 import { randomNumber } from "./util"
 
 export class BaseActor extends Actor {
@@ -235,13 +235,18 @@ export class Enemy extends LivingActor {
 
 
     onInitialize(engine) {
-        const sprite = this.game.textures.enemy.toSprite()
+        //const sprite = this.game.textures.enemy.toSprite()
+        const animation = this.game.textures.enemy.toAnimation(50)
+        animation.scale = new Vector(2, 2)
+        //const spriteSheet = this.game.textures.player.toSpriteSheet()
+        //let animation = Animation.fromSpriteSheet(spriteSheet, [0,1,2,3,4,5,6,7], 50)
+       
+        
+        this.animation = animation
+        this.graphics.use(animation)
 
-        // TODO: this doesn't actually do anything??
-        sprite.showDebug = this.game.config.development.debugSprites
-        sprite.scale = new Vector(2, 2)
-
-        this.graphics.use(sprite)
+        //sprite.scale = new Vector(2, 2)
+        //this.graphics.use(sprite)
     }
 }
 
@@ -280,13 +285,15 @@ export class Player extends LivingActor {
     }
 
     onInitialize(engine) {
-        const sprite = this.game.textures.player.toSprite()
-        // TODO: this doesn't actually do anything??
-        sprite.showDebug = this.game.config.development.debugSprites
-
-        sprite.scale = new Vector(2, 2)
-
-        this.graphics.use(sprite)
+        //const sprite = this.game.textures.player.toSprite()
+        const animation = this.game.textures.player.toAnimation(50)
+        animation.scale = new Vector(2, 2)
+        //const spriteSheet = this.game.textures.player.toSpriteSheet()
+        //let animation = Animation.fromSpriteSheet(spriteSheet, [0,1,2,3,4,5,6,7], 50)
+       
+        
+        this.animation = animation
+        this.graphics.use(animation)
     }
 
     onPreUpdate(engine, delta) {
@@ -300,6 +307,10 @@ export class Player extends LivingActor {
 
         if (moveVector.x || moveVector.y) {
             this.pos = this.pos.add(moveVector.normalize().scale(delta * this.speed))
+            this.animation.play()
+        }
+        else {
+            this.animation.pause()
         }
     }
 

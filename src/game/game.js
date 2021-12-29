@@ -1,4 +1,4 @@
-import { Engine, Vector, ImageSource, Color } from "excalibur"
+import { Engine, Vector, ImageSource, Color, Gif } from "excalibur"
 
 import { MusicManager } from "./music"
 import { Player, Enemy, Bush, Pond } from "./player"
@@ -6,8 +6,8 @@ import makeLoader from "./assets"
 import { randomNumber, randomFloat } from "./util"
 
 // import textures
-import texturePlayer from "../assets/images/Lizard.png"
-import textureEnemy from "../assets/images/Lizard3.png"
+import texturePlayer from "../assets/images/GoodLizard.gif"
+import textureEnemy from "../assets/images/BadLizard.gif"
 import textureBush from "../assets/images/Bush.png"
 import textureBush2 from "../assets/images/Bush2.png"
 import texturePuddle from "../assets/images/Puddle.png"
@@ -37,6 +37,11 @@ const config = {
 
 function loadTexture(textureImport, loader) {
     const texture = new ImageSource(textureImport)
+    loader.addResource(texture)
+    return texture
+}
+function loadGif(textureImport, loader) {
+    const texture = new Gif(textureImport, Color.Transparent)
     loader.addResource(texture)
     return texture
 }
@@ -125,8 +130,8 @@ export class Game {
     }
 
     loadTextures() {
-        this.textures.player = loadTexture(texturePlayer, this.loader)
-        this.textures.enemy = loadTexture(textureEnemy, this.loader)
+        this.textures.player = loadGif(texturePlayer, this.loader)
+        this.textures.enemy = loadGif(textureEnemy, this.loader)
         this.textures.bush = loadTexture(textureBush, this.loader)
         this.textures.bush2 = loadTexture(textureBush2, this.loader)
         this.textures.puddle = loadTexture(texturePuddle, this.loader)
