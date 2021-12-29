@@ -1,6 +1,6 @@
 import { Sound } from "excalibur"
 
-import song from "../assets/TheJunglesHeartbeat.mp3"
+import song from "../assets/music/TheJunglesHeartbeat.mp3"
 
 export class MusicManager {
     constructor(loader) {

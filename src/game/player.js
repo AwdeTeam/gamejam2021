@@ -1,4 +1,5 @@
 /* player.js */
+/* eslint-disable */
 
 import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
 
@@ -38,17 +39,14 @@ export class Player extends BaseActor {
         super(game, {
             name: "player",
 
-            x: 150,
-            y: 20,
-            width: 20,
-            height: 20,
-
-            color: Color.Green,
+            x: 500,
+            y: 250,
+            width: 40,
+            height: 40,
         })
 
         this.size = config.size
         this.speed = config.speed
-        this.texture = null
 
         this.body.collisionType = CollisionType.Fixed
 
@@ -56,7 +54,7 @@ export class Player extends BaseActor {
 
         primary.on("move", ({ ev: { x, y } }) => {
             const mousePos = new Vector(x, y)
-            const diffVector = mousePos.sub(this.pos)
+            const diffVector = this.pos.sub(mousePos)
             this.rotation = diffVector.toAngle()
         })
 
@@ -71,12 +69,20 @@ export class Player extends BaseActor {
                     velocity: { x: Math.cos(this.rotation), y: Math.sin(this.rotation) },
                     lifetime: 100,
 
-                    color: Color.Red,
+                     color: Color.Red,
                 })
             } catch (ex) {
                 console.log(ex)
             }
         })
+    }
+
+    onInitialize(engine) {
+        let sprite = this.game.textures.player.toSprite()
+        sprite.showDebug = this.game.config.development.debugSprites 
+        sprite.scale = new Vector(2, 2)
+
+        this.graphics.use(sprite)
     }
 
     onPreUpdate(engine, delta) {
