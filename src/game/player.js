@@ -295,7 +295,7 @@ export class Player extends LivingActor {
         keyboard.on("press", ({ key }) => {
             switch (key) {
             case "KeyE":
-                if (this.touchingPond) {
+                if (this.touchingPond && this.thirst <= 20) {
                     this.thirst += 5
                 }
                 break
