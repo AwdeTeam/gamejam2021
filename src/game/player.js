@@ -31,6 +31,8 @@ class Projectile extends BaseActor {
 
         this.on("collisionstart", ({ other }) => {
             // eslint-disable-next-line no-underscore-dangle
+            if (other._name !== "player" && other._name !== "enemy") { return } // this is because of bullet collisisons
+            // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
             try {
                 other.hit(1)
@@ -200,7 +202,7 @@ export class Player extends LivingActor {
             y: 250,
             width: 60, // these are apparently backwards from what one would expect
             height: 30,
-            health: 10,
+            health: 100,
         })
 
         this.cooldownMax = 50
@@ -220,20 +222,7 @@ export class Player extends LivingActor {
 
         primary.on("down", ({ ev: { button } }) => {
             if (button === 0) {
-                console.log(this.fireCooldown)
                 this.FIRE()
-                // this.game.addActor(Projectile, {
-                //     x: this.pos.x,
-                //     y: this.pos.y,
-                //     width: 5,
-                //     height: 5,
-
-                //     velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
-                //     lifetime: 100,
-
-                //     color: Color.Red,
-                //     originator: this
-                // })
             }
         })
     }
