@@ -70,7 +70,7 @@ class LivingActor extends BaseActor {
     onPostDeath() {}
 
     lifeUpdate(delta) {
-        this.removeIfDead()
+        this.removeIfDead() 
     }
 
     onPreUpdate(engine, delta) {
