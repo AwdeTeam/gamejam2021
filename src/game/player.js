@@ -1,6 +1,7 @@
 /* player.js */
 
 import { Actor, Vector, Input, Color, CollisionType } from "excalibur"
+import { randomNumber } from "./util"
 
 export class BaseActor extends Actor {
     constructor(game, config) {
@@ -29,9 +30,6 @@ class Projectile extends BaseActor {
         this.velocity = new Vector(velocity.x, velocity.y)
 
         this.on("collisionstart", ({ other }) => {
-            console.log(this.originator)
-            console.log(other)
-
             // eslint-disable-next-line no-underscore-dangle
             if (other._name === this.originator._name) { return }
             try {
@@ -58,10 +56,15 @@ class LivingActor extends BaseActor {
         this.health = health
 
         this.body.collisionType = CollisionType.Active
+
+        this.fireCooldown = 0
+        this.cooldownMax = 300
     }
 
     hit(damage) {
         this.health -= damage
+        console.log("Hit! health now")
+        console.log(this.health)
     }
 
     removeIfDead() {
@@ -76,12 +79,32 @@ class LivingActor extends BaseActor {
 
     onPostDeath() {}
 
-    lifeUpdate(delta) {
+    lifeUpdate() {
         this.removeIfDead()
     }
 
     onPreUpdate(engine, delta) {
-        this.lifeUpdate(delta)
+        this.lifeUpdate()
+        this.fireCooldown -= delta
+    }
+
+    FIRE() {
+        if (this.fireCooldown > 0) { return }
+        this.fireCooldown = this.cooldownMax
+
+        // TODO: add bullet types
+        this.game.addActor(Projectile, {
+            x: this.pos.x,
+            y: this.pos.y,
+            width: 5,
+            height: 5,
+
+            velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
+            lifetime: 100,
+
+            color: Color.Red,
+            originator: this
+        })
     }
 }
 
@@ -98,6 +121,59 @@ export class Enemy extends LivingActor {
             health: 10,
             ...config,
         })
+
+        this.speed = 0.1
+        this.targetLoc = this.pos
+        this.targetAcquired = false
+        this.timeInStrategy = 50000000 // amount of time we've spent moving to targetLoc
+    }
+
+
+    onPreUpdate(engine, delta) {
+        LivingActor.prototype.onPreUpdate.call(this, engine, delta)
+        // enemy moving logic
+
+        this.timeInStrategy += delta
+
+        // enemy rotation logic
+        const diffVector = this.pos.sub(this.game.player.pos)
+        this.rotation = diffVector.toAngle()
+
+        // determine distance to player
+        if (diffVector.magnitude() < 300) {
+            this.targetLoc = this.game.player.pos
+            this.targetAcquired = true
+            this.timeInStrategy = 0
+        }
+        else {
+            this.targetAcquired = false
+        }
+
+        if (diffVector.magnitude() < 200) {
+            this.FIRE()
+        }
+
+
+        if (this.timeInStrategy > 5000 && !this.targetAcquired) {
+            console.log("Re-evaluating")
+
+            // pick a random location
+            const x = randomNumber(0, 1200)
+            const y = randomNumber(0, 850)
+
+            this.targetLoc = new Vector(x, y)
+            this.timeInStrategy = 0
+        }
+
+        if (this.targetLoc === undefined) { return }
+
+
+        const diffPosVector = this.targetLoc.sub(this.pos)
+        const posAdjustmentVector = Vector.fromAngle(diffPosVector.toAngle())
+
+        if (posAdjustmentVector.x || posAdjustmentVector.y) {
+            this.pos = this.pos.add(posAdjustmentVector.scale(delta * this.speed))
+        }
     }
 
 
@@ -124,11 +200,15 @@ export class Player extends LivingActor {
             health: 10,
         })
 
+        this.cooldownMax = 50
+
         this.size = config.size
         this.speed = config.speed
 
         const { input: { pointers: { primary } } } = this.engine
 
+        // TODO: need to make this pointing logic apply when we move the player
+        // too (cache the mouse pos)
         primary.on("move", ({ ev: { x, y } }) => {
             const mousePos = new Vector(x, y)
             const diffVector = this.pos.sub(mousePos.add(this.game.cameraCenter))
@@ -137,18 +217,20 @@ export class Player extends LivingActor {
 
         primary.on("down", ({ ev: { button } }) => {
             if (button === 0) {
-                this.game.addActor(Projectile, {
-                    x: this.pos.x,
-                    y: this.pos.y,
-                    width: 5,
-                    height: 5,
+                console.log(this.fireCooldown)
+                this.FIRE()
+                // this.game.addActor(Projectile, {
+                //     x: this.pos.x,
+                //     y: this.pos.y,
+                //     width: 5,
+                //     height: 5,
 
-                    velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
-                    lifetime: 100,
+                //     velocity: { x: -Math.cos(this.rotation), y: -Math.sin(this.rotation) },
+                //     lifetime: 100,
 
-                    color: Color.Red,
-                    originator: this
-                })
+                //     color: Color.Red,
+                //     originator: this
+                // })
             }
         })
     }
@@ -164,6 +246,8 @@ export class Player extends LivingActor {
     }
 
     onPreUpdate(engine, delta) {
+        LivingActor.prototype.onPreUpdate.call(this, engine, delta)
+
         const { input: { keyboard } } = engine
         const moveVector = new Vector(
             keyboard.isHeld(Input.Keys.D) - keyboard.isHeld(Input.Keys.A),
