@@ -116,6 +116,20 @@ class LivingActor extends BaseActor {
 
         this.fireCooldown = 0
         this.cooldownMax = 300
+
+        this.touchingPond = false
+
+        this.on("collisionstart", ({ other }) => {
+            if (other.name === "pond") {
+                this.touchingPond = true
+            }
+        })
+
+        this.on("collisionend", ({ other }) => {
+            if (other.name === "pond") {
+                this.touchingPond = false
+            }
+        })
     }
 
     hit(damage) {
@@ -231,22 +245,17 @@ export class Enemy extends LivingActor {
         if (posAdjustmentVector.x || posAdjustmentVector.y) {
             this.pos = this.pos.add(posAdjustmentVector.scale(delta * this.speed))
         }
+
+        // Enemies don't deal with thirst for now
+        this.thirst = 10
     }
 
 
     onInitialize(engine) {
-        //const sprite = this.game.textures.enemy.toSprite()
         const animation = this.game.textures.enemy.toAnimation(50)
         animation.scale = new Vector(2, 2)
-        //const spriteSheet = this.game.textures.player.toSpriteSheet()
-        //let animation = Animation.fromSpriteSheet(spriteSheet, [0,1,2,3,4,5,6,7], 50)
-       
-        
         this.animation = animation
         this.graphics.use(animation)
-
-        //sprite.scale = new Vector(2, 2)
-        //this.graphics.use(sprite)
     }
 }
 
@@ -267,7 +276,7 @@ export class Player extends LivingActor {
         this.size = config.size
         this.speed = config.speed
 
-        const { input: { pointers: { primary } } } = this.engine
+        const { input: { pointers: { primary }, keyboard } } = this.engine
 
         // TODO: need to make this pointing logic apply when we move the player
         // too (cache the mouse pos)
@@ -282,16 +291,23 @@ export class Player extends LivingActor {
                 this.FIRE()
             }
         })
+
+        keyboard.on("press", ({ key }) => {
+            switch (key) {
+            case "KeyE":
+                if (this.touchingPond) {
+                    this.thirst += 5
+                }
+                break
+            default:
+                break
+            }
+        })
     }
 
     onInitialize(engine) {
-        //const sprite = this.game.textures.player.toSprite()
         const animation = this.game.textures.player.toAnimation(50)
         animation.scale = new Vector(2, 2)
-        //const spriteSheet = this.game.textures.player.toSpriteSheet()
-        //let animation = Animation.fromSpriteSheet(spriteSheet, [0,1,2,3,4,5,6,7], 50)
-       
-        
         this.animation = animation
         this.graphics.use(animation)
     }

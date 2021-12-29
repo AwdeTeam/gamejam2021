@@ -20,9 +20,9 @@ const config = {
         updateInterval: 250, // How many milliseconds (at minimum) between infobar updates?
     },
     world: {
-        enemies: 0,
+        enemies: 10,
         bushes: 2000,
-        ponds: 250,
+        ponds: 100,
     },
     display: {
         width: 1200,
