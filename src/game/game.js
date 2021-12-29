@@ -1,4 +1,4 @@
-import { Engine, Logger, ImageSource, Color } from "excalibur"
+import { Engine, Vector, ImageSource, Color } from "excalibur"
 
 import { MusicManager } from "./music"
 import { Player, Enemy } from "./player"
@@ -55,10 +55,19 @@ export class Game {
 
     setupPlayer() {
         this.player = this.addActor(Player, config.player)
+        this.engine.currentScene.camera.strategy.radiusAroundActor(this.player, 250)
     }
 
     setupEnemies() {
         this.addActor(Enemy, { x: 100, y: 100 })
+    }
+
+    get screenCenter() {
+        return new Vector(config.display.width / 2, config.display.height / 2)
+    }
+
+    get cameraCenter() {
+        return this.engine.currentScene.camera.pos.sub(this.screenCenter)
     }
 
     loadTextures() {

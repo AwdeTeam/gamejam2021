@@ -131,7 +131,7 @@ export class Player extends LivingActor {
 
         primary.on("move", ({ ev: { x, y } }) => {
             const mousePos = new Vector(x, y)
-            const diffVector = this.pos.sub(mousePos)
+            const diffVector = this.pos.sub(mousePos.add(this.game.cameraCenter))
             this.rotation = diffVector.toAngle()
         })
 
